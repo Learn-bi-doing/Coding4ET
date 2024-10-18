@@ -74,6 +74,7 @@ with tabs[0]:
         # Display the resized image using Streamlit
         st.image("qr_code_resized.png", caption="Generated QR Code", use_column_width=False, width=250)
 
+
 # Timer tab
 with tabs[1]:
     st.subheader("⏳ MK316 Timer with Circular Progress")
@@ -88,39 +89,25 @@ with tabs[1]:
     if "time_up" not in st.session_state:
         st.session_state.time_up = False
 
-    # Placeholder to display the current time (digital clock)
-    current_time_placeholder = st.empty()
-
-    # Function to display the current time (as a live digital clock)
-    def display_current_time():
-        seoul_tz = pytz.timezone('Asia/Seoul')  # Set timezone to Seoul
-        current_time = datetime.now(seoul_tz).strftime("%H:%M:%S")  # Convert to Seoul time
-
-        # Style the clock (increase font size and set color)
-        current_time_placeholder.markdown(
-            f"<h1 style='text-align: center; font-size: 60px; color: #5785A4;'>{current_time}</h1>",  # Smaller clock font size
-            unsafe_allow_html=True
-        )
-
-    # Function to start the countdown timer
-    def start_countdown():
-        if not st.session_state.countdown_started:
-            st.session_state.remaining_time = st.session_state.start_time
-            st.session_state.countdown_started = True
-            st.session_state.time_up = False
-
-    # Function to reset the countdown timer
-    def reset_countdown():
-        st.session_state.start_time = 0
-        st.session_state.remaining_time = 0
-        st.session_state.countdown_started = False
-        st.session_state.time_up = False
-
     # Set up the layout in two columns
     col1, col2 = st.columns([1, 1])
 
-    # Left column: Input field, buttons, and audio
+    # Left column: Current time, input field, buttons, and audio
     with col1:
+        # Placeholder to display the current time (digital clock)
+        current_time_placeholder = st.empty()
+
+        # Function to display the current time (as a live digital clock)
+        def display_current_time():
+            seoul_tz = pytz.timezone('Asia/Seoul')  # Set timezone to Seoul
+            current_time = datetime.now(seoul_tz).strftime("%H:%M:%S")  # Convert to Seoul time
+
+            # Style the clock (increase font size and set color)
+            current_time_placeholder.markdown(
+                f"<h1 style='text-align: center; font-size: 60px; color: #5785A4;'>{current_time}</h1>",  # Smaller clock font size
+                unsafe_allow_html=True
+            )
+
         # Input field for countdown time in seconds
         st.session_state.start_time = st.number_input("Time (s)", min_value=0, max_value=3600, value=10, label_visibility="visible")
         
