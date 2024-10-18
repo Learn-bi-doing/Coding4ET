@@ -77,7 +77,7 @@ with tabs[0]:
 
 # Timer tab
 with tabs[1]:
-    st.text("⏳ MK316 Timer")
+    st.text("🐾 MK316 Timer")
 
     # Initialize session state for countdown
     if "countdown_started" not in st.session_state:
