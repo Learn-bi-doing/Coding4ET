@@ -41,34 +41,6 @@ def update_progress_circle(remaining_time, total_time, time_up):
 # Streamlit tabs
 tabs = st.tabs(["🏁 QR", "⌚ Timer", "👥 Grouping", "🎧 multi-TTS"])
 
-# QR Code tab
-with tabs[0]:
-    st.subheader("QR Code Generator")
-    qr_link = st.text_input("Enter a link to generate a QR code:")
-
-    # Adding a 'Generate QR Code' button
-    generate_qr_button = st.button("Generate QR")
-    
-    if generate_qr_button and qr_link:
-        # Generate the QR code only when the button is clicked
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(qr_link)
-        qr.make(fit=True)
-
-        qr_img = qr.make_image(fill='black', back_color='white')
-
-        # Convert the QR code image to RGB format and resize
-        qr_img = qr_img.convert('RGB')  # Convert to RGB to be compatible with st.image
-        qr_img = qr_img.resize((300, 300))  # Resize the image
-
-        # Display the resized image using Streamlit
-        st.image(qr_img, caption="Generated QR Code", use_column_width=False, width=250)
-
 # Timer tab
 with tabs[1]:
     st.text("👀 MK316 Timer")
@@ -89,7 +61,6 @@ with tabs[1]:
             st.session_state.remaining_time = st.session_state.start_time
             st.session_state.countdown_started = True
             st.session_state.time_up = False
-            st.experimental_rerun()  # Forces the app to refresh and update the UI
 
     # Function to reset the countdown timer
     def reset_countdown():
@@ -97,7 +68,7 @@ with tabs[1]:
         st.session_state.remaining_time = 0
         st.session_state.countdown_started = False
         st.session_state.time_up = False
-        st.experimental_rerun()
+        st_autorefresh(interval=0, limit=1)  # Trigger a refresh
 
     # Set up the layout in two columns
     col1, col2 = st.columns([1, 1])
@@ -150,7 +121,7 @@ with tabs[1]:
     with col2:
         progress_placeholder = st.empty()
 
-    # Timer countdown logic
+    # Timer countdown logic (continuously updates)
     if st.session_state.countdown_started and not st.session_state.time_up:
         if st.session_state.remaining_time > 0:
             # Update the circular progress chart with time in the center
@@ -159,8 +130,9 @@ with tabs[1]:
 
             # Decrease the remaining time
             st.session_state.remaining_time -= 1
-            time.sleep(1)
-            st.experimental_rerun()  # Forces the app to refresh for the next second
+
+            # Refresh the app after 1 second
+            st.experimental_rerun()
         else:
             # When the countdown finishes, display "Time's Up!" inside the circle
             st.session_state.time_up = True
@@ -172,7 +144,9 @@ with tabs[1]:
                 audio_file = open("data/timesup.mp3", "rb")
                 audio_placeholder.audio(audio_file.read(), format="audio/mp3")
 
-# The rest of the tabs (Grouping and TTS) remain the same
+    # Autorefresh the app every 1 second to update the clock
+    display_current_time()
+    st_autorefresh(interval=1000, limit=1000)
 
 # Grouping tab
 with tabs[2]:
