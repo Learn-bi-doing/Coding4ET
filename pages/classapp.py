@@ -16,7 +16,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
                startangle=90, 
                counterclock=False, 
                wedgeprops=dict(width=0.3))
-        ax.text(0, 0, "Time's Up!", fontsize=12, va='center', ha='center')  # Smaller font size for "Time's Up!"
+        ax.text(0, 0, "Time's Up!", fontsize=10, va='center', ha='center')  # Smaller font size for "Time's Up!"
     else:
         # Calculate the proportion of remaining time
         fraction_completed = remaining_time / total_time if total_time > 0 else 0
