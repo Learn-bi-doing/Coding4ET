@@ -10,6 +10,11 @@ import time
 import pytz
 from datetime import datetime
 
+# Creating the word cloud
+def create_wordcloud(text):
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
+    return wordcloud
+
 # Function to update the progress circle with time inside or display "Time's Up!"
 def update_progress_circle(remaining_time, total_time, time_up):
     fig, ax = plt.subplots(figsize=(2, 2))  # Smaller figure size to fit layout
@@ -218,41 +223,4 @@ with tabs[2]:
             fixed_groups_df_list[i] = group_df  # Update the group with added members
 
         # Grouping the remaining names
-        groups = fixed_groups_df_list  # Start with adjusted fixed groups
-        for i in range(0, len(remaining_df), members_per_group):
-            groups.append(remaining_df[i:i + members_per_group])
-
-        # Determine the maximum group size
-        max_group_size = max(len(group) for group in groups)
-        
-        # Creating a new DataFrame for grouped data with separate columns for each member
-        grouped_data = {'Group': [f'Group {i+1}' for i in range(len(groups))]}
-        # Add columns for each member
-        for i in range(max_group_size):
-            grouped_data[f'Member{i+1}'] = [group['Names'].tolist()[i] if i < len(group) else "" for group in groups]
-
-        grouped_df = pd.DataFrame(grouped_data)
-        
-        return grouped_df
-
-    # Main interface for grouping
-    file = st.file_uploader("Upload CSV File")
-    members_per_group = st.number_input("Members per Group", min_value=1, value=5)
-    fixed_groups_input = st.text_input("Fixed Groups (separated by semicolon;)", placeholder="e.g. Name1, Name2; Name3, Name4")
-
-    if file:
-        grouped_df = group_names(file, members_per_group, fixed_groups_input)
-        st.write(grouped_df)
-        csv = grouped_df.to_csv(index=False).encode('utf-8')
-        st.download_button(label="Download Grouped Names CSV", data=csv, file_name='grouped_names.csv', mime='text/csv')
-
-
-# Video embedding tab
-with tabs[3]:
-    st.subheader("Tutorials")
-    st.write("Below is an embedded video from YouTube: Coding basics")
-    # Embed YouTube video using HTML iframe
-    html_code = """
-    <iframe width="500" height="400" src="https://www.youtube.com/embed/uigxMFBR0Wg" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    """
-    components.html(html_code, height=500)
+        groups = fixed_groups_df_list  # Start with adjusted
