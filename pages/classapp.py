@@ -147,7 +147,7 @@ with tabs[1]:
                 st.session_state.countdown_started = False
 
                 # Play the sound using Streamlit's audio player
-                audio_file = open("https://github.com/Learn-bi-doing/Coding4ET/raw/main/pages/data/timesup.mp3", "rb")
+                audio_file = open("data/timesup.mp3", "rb")
                 st.audio(audio_file.read(), format="audio/mp3")
 
         # Sleep for a second
