@@ -154,35 +154,25 @@ with tabs[1]:
     with col2:
         progress_placeholder = st.empty()
 
-    # Timer countdown loop (only runs when countdown has started)
-    while True:
-        # Update the clock every second
-        display_current_time()
+    # Timer countdown loop (avoid infinite loop)
+    if st.session_state.countdown_started and not st.session_state.time_up:
+        if st.session_state.remaining_time >= 0:
+            # Update the circular progress chart with time in the center
+            fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time, time_up=False)
+            progress_placeholder.pyplot(fig)
 
-        if st.session_state.countdown_started and not st.session_state.time_up:
-            # Display countdown time while the countdown is running
-            if st.session_state.remaining_time >= 0:
-                # Update the circular progress chart with time in the center
-                fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time, time_up=False)
-                progress_placeholder.pyplot(fig)
+            st.session_state.remaining_time -= 1
+            time.sleep(1)
+            st.experimental_rerun()
+        else:
+            # When the countdown finishes, display "Time's Up!" inside the circle
+            st.session_state.time_up = True
+            fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time, time_up=True)
+            progress_placeholder.pyplot(fig)
 
-                st.session_state.remaining_time -= 1
-                time.sleep(1)
-            else:
-                # When the countdown finishes, display "Time's Up!" inside the circle
-                st.session_state.time_up = True
-                fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time, time_up=True)
-                progress_placeholder.pyplot(fig)
-
-                # Play the sound using Streamlit's audio player in the left column
-                with col1:
-                    audio_file = open("data/timesup.mp3", "rb")
-                    audio_placeholder.audio(audio_file.read(), format="audio/mp3")
-
-                st.session_state.countdown_started = False
-
-        # Ensure continuous clock display
-        time.sleep(0.1)
+            # Play the sound using Streamlit's audio player in the left column
+            audio_file = open("data/timesup.mp3", "rb")
+            audio_placeholder.audio(audio_file.read(), format="audio/mp3")
 
 # Grouping tab
 with tabs[2]:
@@ -264,7 +254,6 @@ with tabs[2]:
 
         else:
             st.error("Please upload a CSV file before submitting.")
-
 
 # Text-to-Speech tab
 with tabs[3]:
