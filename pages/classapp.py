@@ -45,7 +45,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
     return fig
 
 # Streamlit tabs
-tabs = st.tabs(["📈 QR", "⏳ Timer", "👥 Grouping", "🔊 Text to Speech"])
+tabs = st.tabs(["📈 QR", "⏳ Timer", "👥 Grouping", "🎬 multi-TTS"])
 
 # QR Code tab
 with tabs[0]:
@@ -97,13 +97,13 @@ with tabs[2]:
     st.subheader("👥 Grouping Tool")
 
     # Upload file section
-    uploaded_file = st.file_uploader("Upload CSV File", type=["csv"])
+    uploaded_file = st.file_uploader("Upload CSV File: Note that there should be only one column with 'Names' as column name.", type=["csv"])
     
     # User input for group size
     members_per_group = st.number_input("Members per Group", min_value=1, value=5)
     
     # Input for fixed groups (optional)
-    fixed_groups_input = st.text_input("Fixed Groups (separated by semicolon;)", placeholder="Name1, Name2; Name3, Name4")
+    fixed_groups_input = st.text_input("Fixed Groups (if more than two fixed members, separate them by semicolon;)", placeholder="(Optional) format: Name1, Name2; Name3, Name4")
 
     # Submit button to trigger grouping process
     if st.button("Submit"):
@@ -172,6 +172,7 @@ with tabs[2]:
 
         else:
             st.error("Please upload a CSV file before submitting.")
+
 
 # Text-to-Speech tab
 with tabs[3]:
