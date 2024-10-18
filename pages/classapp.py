@@ -8,43 +8,10 @@ from PIL import Image
 import time
 import pytz
 from datetime import datetime
-
-# Creating the word cloud
-def create_wordcloud(text):
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
-    return wordcloud
-
-# Function to update the progress circle with time inside or display "Time's Up!"
-def update_progress_circle(remaining_time, total_time, time_up):
-    fig, ax = plt.subplots(figsize=(2, 2))  # Smaller figure size to fit layout
-    
-    if time_up:
-        # Show "Time's Up!" in the center of the circle
-        ax.pie([1], 
-               colors=['#6d8c9c'], 
-               startangle=90, 
-               counterclock=False, 
-               wedgeprops=dict(width=0.3))
-        ax.text(0, 0, "Time's Up!", fontsize=10, va='center', ha='center')  # Smaller font size for "Time's Up!"
-    else:
-        # Calculate the proportion of remaining time
-        fraction_completed = remaining_time / total_time if total_time > 0 else 0
-        ax.pie([fraction_completed, 1 - fraction_completed], 
-               colors=['#6d8c9c', '#D5DEDD'], 
-               startangle=90, 
-               counterclock=False, 
-               wedgeprops=dict(width=0.3))
-        
-        # Format and add remaining time as text in the center of the circle
-        minutes, seconds = divmod(remaining_time, 60)
-        ax.text(0, 0, f"{int(minutes):02d}:{int(seconds):02d}", 
-                fontsize=14, va='center', ha='center')  # Adjusted font size for remaining time
-
-    ax.set_aspect('equal')
-    return fig
+import pandas as pd
 
 # Streamlit tabs
-tabs = st.tabs(["🌵 QR", "⏳ Timer", "🌌 Word Cloud", "🎬 Videos"])
+tabs = st.tabs(["📈 QR", "⏳ Timer", "👥 Group Names", "🎬 Videos"])
 
 # QR Code tab
 with tabs[0]:
@@ -75,9 +42,9 @@ with tabs[0]:
         st.image("qr_code_resized.png", caption="Generated QR Code", use_column_width=False, width=250)
 
 
-# Timer tab
+# Timer tab (Tab 2)
 with tabs[1]:
-    st.text("👀 MK316 Timer")
+    st.subheader("⏳ MK316 Timer with Circular Progress")
 
     # Initialize session state for countdown
     if "countdown_started" not in st.session_state:
@@ -118,7 +85,7 @@ with tabs[1]:
 
             # Style the clock (increase font size and set color)
             current_time_placeholder.markdown(
-                f"<h1 style='text-align: center; font-size: 40px; color: #5785A4;'>{current_time}</h1>",  # Smaller clock font size
+                f"<h1 style='text-align: center; font-size: 60px; color: #5785A4;'>{current_time}</h1>",  # Smaller clock font size
                 unsafe_allow_html=True
             )
 
@@ -184,26 +151,80 @@ with tabs[1]:
         # Ensure continuous clock display
         time.sleep(0.1)
 
-# Word cloud tab
+# Grouping tab (Tab 3)
 with tabs[2]:
-    st.subheader("A tab with a word cloud")
-    st.markdown("Please enter some text to generate a word cloud. [sample text](https://raw.githubusercontent.com/MK316/MK-316/refs/heads/main/data/sampletext.txt)")
-    user_input = st.text_input("Enter text to create a word cloud:")
-    generate_button = st.button("Generate Word Cloud")
+    st.subheader("Group Names")
+    
+    # Upload CSV
+    uploaded_file = st.file_uploader("Upload CSV with 'Names' column", type=['csv'])
 
-    if generate_button and user_input:  # Generate only when the button is clicked
-        wordcloud = create_wordcloud(user_input)
-        fig, ax = plt.subplots()
-        ax.imshow(wordcloud, interpolation='bilinear')
-        ax.axis("off")
-        st.pyplot(fig)
+    # Group size input
+    members_per_group = st.number_input("Members per Group", value=5)
 
-# Video embedding tab
+    # Textbox for fixed groups input
+    fixed_groups_input = st.text_area("Fixed Groups (Optional)", 
+                                      placeholder="Name1, Name2; Name3, Name4")
+
+    if uploaded_file is not None:
+        df = pd.read_csv(uploaded_file, encoding='utf-8')
+        st.write("Preview of Uploaded Data:", df)
+
+        # Function to group names
+        def group_names(df, members_per_group, fixed_groups_input):
+            # Parse fixed groups input
+            fixed_groups = [group.strip() for group in fixed_groups_input.split(';') if group.strip()]
+            fixed_groups_df_list = []
+            remaining_df = df.copy()
+
+            # Process fixed groups and create a list for additional members to be added
+            for group in fixed_groups:
+                group_names = [name.strip() for name in group.split(',') if name.strip()]
+                # Find these names in the DataFrame
+                matched_rows = remaining_df[remaining_df['Names'].isin(group_names)]
+                fixed_groups_df_list.append(matched_rows)
+                # Remove these names from the pool of remaining names
+                remaining_df = remaining_df[~remaining_df['Names'].isin(group_names)]
+
+            # Shuffle the remaining DataFrame
+            remaining_df = remaining_df.sample(frac=1).reset_index(drop=True)
+
+            # Adjusting fixed groups to include additional members if they're under the specified group size
+            for i, group_df in enumerate(fixed_groups_df_list):
+                while len(group_df) < members_per_group and not remaining_df.empty:
+                    group_df = pd.concat([group_df, remaining_df.iloc[[0]]])
+                    remaining_df = remaining_df.iloc[1:].reset_index(drop=True)
+                fixed_groups_df_list[i] = group_df  # Update the group with added members
+
+            # Grouping the remaining names
+            groups = fixed_groups_df_list  # Start with adjusted fixed groups
+            for i in range(0, len(remaining_df), members_per_group):
+                groups.append(remaining_df[i:i + members_per_group])
+
+            # Determine the maximum group size
+            max_group_size = max(len(group) for group in groups)
+
+            # Creating a new DataFrame for grouped data with separate columns for each member
+            grouped_data = {'Group': [f'Group {i+1}' for i in range(len(groups))]}
+            # Add columns for each member
+            for i in range(max_group_size):
+                grouped_data[f'Member{i+1}'] = [group['Names'].tolist()[i] if i < len(group) else "" for group in groups]
+
+            grouped_df = pd.DataFrame(grouped_data)
+            return grouped_df
+
+        # Generate groups
+        if st.button("Generate Groups"):
+            grouped_df = group_names(df, members_per_group, fixed_groups_input)
+            st.write("Generated Groups:", grouped_df)
+
+            # Provide download option for grouped names
+            grouped_csv = grouped_df.to_csv(index=False).encode('utf-8-sig')
+            st.download_button("Download Grouped Names as CSV", data=grouped_csv, file_name="grouped_names.csv")
+
+# Video embedding tab (Tab 4)
 with tabs[3]:
     st.subheader("Tutorials")
     st.write("Below is an embedded video from YouTube: Coding basics")
     # Embed YouTube video using HTML iframe
     html_code = """
-    <iframe width="500" height="400" src="https://www.youtube.com/embed/uigxMFBR0Wg" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    """
-    components.html(html_code, height=500)
+    <iframe width="500" height="400" src="https://www.youtube
