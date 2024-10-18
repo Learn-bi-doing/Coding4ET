@@ -40,7 +40,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
     return fig
 
 # Streamlit tabs
-tabs = st.tabs(["📈 QR", "⏳ Timer", "👥 Grouping", "🎬 multi-TTS"])
+tabs = st.tabs(["🏁 QR", "⌚ Timer", "👥 Grouping", "🎧 multi-TTS"])
 
 # QR Code tab
 with tabs[0]:
