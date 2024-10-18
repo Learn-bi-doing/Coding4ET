@@ -7,7 +7,8 @@ from PIL import Image
 import time
 import pytz
 from datetime import datetime
-import streamlit.components.v1 as components  # For embedding YouTube videos
+from gtts import gTTS
+import base64
 
 # Function to create wordcloud (if needed)
 def create_wordcloud(text):
@@ -44,7 +45,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
     return fig
 
 # Streamlit tabs
-tabs = st.tabs(["📈 QR", "⏳ Timer", "👥 Grouping", "🎬 Videos"])
+tabs = st.tabs(["📈 QR", "⏳ Timer", "👥 Grouping", "🔊 Text to Speech"])
 
 # QR Code tab
 with tabs[0]:
@@ -96,13 +97,13 @@ with tabs[2]:
     st.subheader("👥 Grouping Tool")
 
     # Upload file section
-    uploaded_file = st.file_uploader("Upload CSV File: Note that there should be only one column with 'Names' as column name.", type=["csv"])
+    uploaded_file = st.file_uploader("Upload CSV File", type=["csv"])
     
     # User input for group size
     members_per_group = st.number_input("Members per Group", min_value=1, value=5)
     
     # Input for fixed groups (optional)
-    fixed_groups_input = st.text_input("Fixed Groups (if more than two fixed members, separate them by semicolon;)", placeholder="(Optional) format: Name1, Name2; Name3, Name4")
+    fixed_groups_input = st.text_input("Fixed Groups (separated by semicolon;)", placeholder="Name1, Name2; Name3, Name4")
 
     # Submit button to trigger grouping process
     if st.button("Submit"):
@@ -172,12 +173,38 @@ with tabs[2]:
         else:
             st.error("Please upload a CSV file before submitting.")
 
-# Video embedding tab
+# Text-to-Speech tab
 with tabs[3]:
-    st.subheader("Tutorials")
-    st.write("Below is an embedded video from YouTube: Coding basics")
-    # Embed YouTube video using HTML iframe
-    html_code = """
-    <iframe width="500" height="400" src="https://www.youtube.com/embed/uigxMFBR0Wg" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    """
-    components.html(html_code, height=500)
+    st.subheader("🔊 Text to Speech Application (Multi-languages)")
+
+    # Text input for TTS
+    text_input = st.text_area("Enter text here:", "")
+    
+    # Language selection
+    language = st.selectbox("Choose language:", ["🇰🇷 Korean", "🇺🇸 English (AmE)", "🇬🇧 English (BrE)", "🇫🇷 French", "🇪🇸 Spanish", "🇨🇳 Chinese"])
+
+    # Function to handle TTS
+    def text_to_speech(text, language):
+        language_map = {
+            "🇰🇷 Korean": "ko",
+            "🇺🇸 English (AmE)": ("en", "us"),
+            "🇬🇧 English (BrE)": ("en", "co.uk"),
+            "🇫🇷 French": "fr",
+            "🇪🇸 Spanish": ("es", "es"),
+            "🇨🇳 Chinese": "zh-CN"
+        }
+
+        if isinstance(language_map[language], tuple):
+            lang, tld = language_map[language]
+            tts = gTTS(text=text, lang=lang, tld=tld)
+        else:
+            lang = language_map[language]
+            tts = gTTS(text=text, lang=lang)
+
+        tts.save("output.mp3")
+        return "output.mp3"
+    
+    # Button to generate speech
+    if st.button("Generate Audio"):
+        if text_input.strip() != "":
+            mp3_file = text_to_speech(text_input
