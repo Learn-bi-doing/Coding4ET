@@ -90,7 +90,63 @@ with tabs[1]:
     if "time_up" not in st.session_state:
         st.session_state.time_up = False
 
-    # Timer code (same as previous)
+    # Function to start the countdown timer
+    def start_countdown():
+        if not st.session_state.countdown_started:
+            st.session_state.remaining_time = st.session_state.start_time
+            st.session_state.countdown_started = True
+            st.session_state.time_up = False
+
+    # Function to reset the countdown timer
+    def reset_countdown():
+        st.session_state.start_time = 0
+        st.session_state.remaining_time = 0
+        st.session_state.countdown_started = False
+        st.session_state.time_up = False
+
+    # Display current time (as digital clock)
+    def display_current_time():
+        seoul_tz = pytz.timezone('Asia/Seoul')  # Set timezone to Seoul
+        current_time = datetime.now(seoul_tz).strftime("%H:%M:%S")  # Convert to Seoul time
+
+        # Style the clock (increase font size and set color)
+        st.markdown(
+            f"<h1 style='text-align: center; font-size: 60px; color: #5785A4;'>{current_time}</h1>",  # Clock font size
+            unsafe_allow_html=True
+        )
+
+    # Input field for countdown time in seconds
+    st.session_state.start_time = st.number_input("Time (s)", min_value=0, max_value=3600, value=10, label_visibility="visible")
+
+    # Start and Reset buttons
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("Start"):
+            start_countdown()
+    with col2:
+        if st.button("Reset"):
+            reset_countdown()
+
+    # Countdown loop (this part avoids infinite loops and uses rerun mechanism)
+    if st.session_state.countdown_started:
+        if st.session_state.remaining_time > 0:
+            minutes, seconds = divmod(st.session_state.remaining_time, 60)
+            st.markdown(f"<h1 style='text-align: center; font-size: 40px;'>{int(minutes):02d}:{int(seconds):02d}</h1>", unsafe_allow_html=True)
+            st.session_state.remaining_time -= 1
+            time.sleep(1)
+            st.experimental_rerun()  # Rerun the script to keep updating the countdown
+
+        else:
+            st.markdown("<h1 style='text-align: center;'>⏰ Time's Up!</h1>", unsafe_allow_html=True)
+            st.session_state.countdown_started = False
+            # Play sound when time's up
+            audio_file = open("data/timesup.mp3", "rb")
+            st.audio(audio_file.read(), format="audio/mp3")
+
+    # Always display current time on the screen
+    display_current_time()
+
 
 # Grouping tab
 with tabs[2]:
