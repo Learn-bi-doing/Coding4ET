@@ -39,7 +39,7 @@ if "time_up" not in st.session_state:
     st.session_state.time_up = False
 
 # Title
-st.title("👀 MK316 Stopwatch")
+st.text("👀 MK316 Stopwatch")
 
 # Placeholder to display the current time (digital clock)
 current_time_placeholder = st.empty()
