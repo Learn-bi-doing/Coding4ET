@@ -8,12 +8,9 @@ from PIL import Image
 import time
 import pytz
 from datetime import datetime
+import pandas as pd
 
-# Creating the word cloud
-def create_wordcloud(text):
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
-    return wordcloud
-
+# Creating the word cloud (function removed since we're replacing it with Grouping)
 # Function to update the progress circle with time inside or display "Time's Up!"
 def update_progress_circle(remaining_time, total_time, time_up):
     fig, ax = plt.subplots(figsize=(2, 2))  # Smaller figure size to fit layout
@@ -24,7 +21,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
                colors=['#6d8c9c'], 
                startangle=90, 
                counterclock=False, 
-               wedgeprops=dict(width=0.1))
+               wedgeprops=dict(width=0.3))
         ax.text(0, 0, "Time's Up!", fontsize=10, va='center', ha='center')  # Smaller font size for "Time's Up!"
     else:
         # Calculate the proportion of remaining time
@@ -33,7 +30,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
                colors=['#6d8c9c', '#D5DEDD'], 
                startangle=90, 
                counterclock=False, 
-               wedgeprops=dict(width=0.1))
+               wedgeprops=dict(width=0.3))
         
         # Format and add remaining time as text in the center of the circle
         minutes, seconds = divmod(remaining_time, 60)
@@ -44,7 +41,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
     return fig
 
 # Streamlit tabs
-tabs = st.tabs(["📈 QR", "⏳ Timer", "🌌 Word Cloud", "🎬 Videos"])
+tabs = st.tabs(["📈 QR", "⏳ Timer", "👥 Grouping", "🎬 Videos"])
 
 # QR Code tab
 with tabs[0]:
@@ -52,7 +49,7 @@ with tabs[0]:
     qr_link = st.text_input("Enter a link to generate a QR code:")
 
     # Adding a 'Generate QR Code' button
-    generate_qr_button = st.button("Generate QR")
+    generate_qr_button = st.button("Generate QR Code")
     
     if generate_qr_button and qr_link:
         # Generate the QR code only when the button is clicked
@@ -187,19 +184,69 @@ with tabs[1]:
         # Ensure continuous clock display
         time.sleep(0.1)
 
-# Word cloud tab
-with tabs[2]:
-    st.subheader("A tab with a word cloud")
-    st.markdown("Please enter some text to generate a word cloud. [sample text](https://raw.githubusercontent.com/MK316/MK-316/refs/heads/main/data/sampletext.txt)")
-    user_input = st.text_input("Enter text to create a word cloud:")
-    generate_button = st.button("Generate Word Cloud")
 
-    if generate_button and user_input:  # Generate only when the button is clicked
-        wordcloud = create_wordcloud(user_input)
-        fig, ax = plt.subplots()
-        ax.imshow(wordcloud, interpolation='bilinear')
-        ax.axis("off")
-        st.pyplot(fig)
+# Grouping tab
+with tabs[2]:
+    st.subheader("👥 Grouping Tool")
+
+    # Function to group names
+    def group_names(file, members_per_group, fixed_groups_input):
+        # Read the CSV file
+        df = pd.read_csv(file)
+
+        # Parse fixed groups input
+        fixed_groups = [group.strip() for group in fixed_groups_input.split(';') if group.strip()]
+        fixed_groups_df_list = []
+        remaining_df = df.copy()
+
+        # Process fixed groups and create a list for additional members to be added
+        for group in fixed_groups:
+            group_names = [name.strip() for name in group.split(',') if name.strip()]
+            # Find these names in the DataFrame
+            matched_rows = remaining_df[remaining_df['Names'].isin(group_names)]
+            fixed_groups_df_list.append(matched_rows)
+            # Remove these names from the pool of remaining names
+            remaining_df = remaining_df[~remaining_df['Names'].isin(group_names)]
+
+        # Shuffle the remaining DataFrame
+        remaining_df = remaining_df.sample(frac=1).reset_index(drop=True)
+        
+        # Adjusting fixed groups to include additional members if they're under the specified group size
+        for i, group_df in enumerate(fixed_groups_df_list):
+            while len(group_df) < members_per_group and not remaining_df.empty:
+                group_df = pd.concat([group_df, remaining_df.iloc[[0]]])
+                remaining_df = remaining_df.iloc[1:].reset_index(drop=True)
+            fixed_groups_df_list[i] = group_df  # Update the group with added members
+
+        # Grouping the remaining names
+        groups = fixed_groups_df_list  # Start with adjusted fixed groups
+        for i in range(0, len(remaining_df), members_per_group):
+            groups.append(remaining_df[i:i + members_per_group])
+
+        # Determine the maximum group size
+        max_group_size = max(len(group) for group in groups)
+        
+        # Creating a new DataFrame for grouped data with separate columns for each member
+        grouped_data = {'Group': [f'Group {i+1}' for i in range(len(groups))]}
+        # Add columns for each member
+        for i in range(max_group_size):
+            grouped_data[f'Member{i+1}'] = [group['Names'].tolist()[i] if i < len(group) else "" for group in groups]
+
+        grouped_df = pd.DataFrame(grouped_data)
+        
+        return grouped_df
+
+    # Main interface for grouping
+    file = st.file_uploader("Upload CSV File")
+    members_per_group = st.number_input("Members per Group", min_value=1, value=5)
+    fixed_groups_input = st.text_input("Fixed Groups (separated by semicolon;)", placeholder="e.g. Name1, Name2; Name3, Name4")
+
+    if file:
+        grouped_df = group_names(file, members_per_group, fixed_groups_input)
+        st.write(grouped_df)
+        csv = grouped_df.to_csv(index=False).encode('utf-8')
+        st.download_button(label="Download Grouped Names CSV", data=csv, file_name='grouped_names.csv', mime='text/csv')
+
 
 # Video embedding tab
 with tabs[3]:
