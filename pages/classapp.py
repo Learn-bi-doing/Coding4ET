@@ -7,12 +7,11 @@ from datetime import datetime
 
 # Function to update the progress circle with time inside
 def update_progress_circle(remaining_time, total_time):
-    # Ensure there is no portion left at the end of the countdown
-    if remaining_time <= 0:
+    if remaining_time < 0:
         remaining_time = 0
     
     # Calculate the proportion of remaining time
-    fraction_completed = remaining_time / total_time
+    fraction_completed = remaining_time / total_time if total_time > 0 else 0
     
     fig, ax = plt.subplots(figsize=(3, 3))
     ax.pie([fraction_completed, 1 - fraction_completed], 
@@ -122,15 +121,13 @@ while True:
 
     if st.session_state.countdown_started and not st.session_state.time_up:
         # Display countdown time while the countdown is running
-        if st.session_state.remaining_time > 0:
-            minutes, seconds = divmod(st.session_state.remaining_time, 60)
-            countdown_placeholder.write(f"**Remaining Time:** {int(minutes):02d}:{int(seconds):02d}")
-
+        if st.session_state.remaining_time >= 0:
             # Update the circular progress chart with time in the center
             fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time)
             progress_placeholder.pyplot(fig)
 
             st.session_state.remaining_time -= 1
+            time.sleep(1)
         else:
             # When the countdown finishes, display the message and play the sound
             st.session_state.time_up = True
@@ -141,5 +138,5 @@ while True:
             audio_file = open("data/timesup.mp3", "rb")
             st.audio(audio_file.read(), format="audio/mp3")
 
-    # Sleep for a second
-    time.sleep(1)
+    # Ensure continuous clock display
+    time.sleep(0.1)
