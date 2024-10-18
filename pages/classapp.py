@@ -16,7 +16,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
                startangle=90, 
                counterclock=False, 
                wedgeprops=dict(width=0.3))
-        ax.text(0, 0, "Time's Up!", fontsize=12, va='center', ha='center')  # Display "Time's Up!"
+        ax.text(0, 0, "Time's Up!", fontsize=24, va='center', ha='center')  # Display "Time's Up!"
     else:
         # Calculate the proportion of remaining time
         fraction_completed = remaining_time / total_time if total_time > 0 else 0
@@ -45,7 +45,7 @@ if "time_up" not in st.session_state:
     st.session_state.time_up = False
 
 # Title
-st.text("👀 MK316 Stopwatch")
+st.title("👀 MK316 Stopwatch")
 
 # Placeholder to display the current time (digital clock)
 current_time_placeholder = st.empty()
@@ -75,43 +75,29 @@ def reset_countdown():
     st.session_state.countdown_started = False
     st.session_state.time_up = False
 
-# Input field for countdown time in seconds
-st.session_state.start_time = st.number_input("Set Countdown Time (in seconds)", min_value=0, max_value=3600, value=10)
-
-# Add custom button colors using Streamlit's CSS support
-st.markdown("""
+# Input field for countdown time in seconds with smaller width
+st.markdown(
+    """
     <style>
-    div.stButton > button:first-child {
-        background-color: #D5DEDD;
-        color: black;
-        height: 3em;
-        width: 10em;
-        border-radius: 10px;
-        border: 2px solid #9EA8A7;
-        font-size: 20px;
-        font-weight: bold;
-    }
-
-    div.stButton > button:last-child {
-        background-color: #B2E8E2;
-        color: black;
-        height: 3em;
-        width: 10em;
-        border-radius: 10px;
-        border: 2px solid #13645B;
-        font-size: 20px;
-        font-weight: bold;
+    input[type=number] {
+        width: 80px !important;
     }
     </style>
-""", unsafe_allow_html=True)
+    """, 
+    unsafe_allow_html=True
+)
 
-# Countdown Start, Stop, and Reset buttons aligned in two columns
-col1, col2 = st.columns(2)
+# Countdown time input, start, and reset buttons aligned in one row
+col1, col2, col3 = st.columns([1, 0.5, 0.5])
 with col1:
-    if st.button("Start Countdown"):
-        start_countdown()
+    st.session_state.start_time = st.number_input("Time (s)", min_value=0, max_value=3600, value=10)
+
 with col2:
-    if st.button("Reset Countdown"):
+    if st.button("Start"):
+        start_countdown()
+
+with col3:
+    if st.button("Reset"):
         reset_countdown()
 
 # Placeholder for displaying the countdown time
