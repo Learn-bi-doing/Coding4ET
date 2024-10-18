@@ -9,144 +9,18 @@ import pytz
 from datetime import datetime
 from gtts import gTTS
 
-# Function to update the progress circle with time inside or display "Time's Up!"
-def update_progress_circle(remaining_time, total_time, time_up):
-    fig, ax = plt.subplots(figsize=(2, 2))  # Smaller figure size to fit layout
-    
-    if time_up:
-        # Show "Time's Up!" in the center of the circle
-        ax.pie([1], 
-               colors=['#6d8c9c'], 
-               startangle=90, 
-               counterclock=False, 
-               wedgeprops=dict(width=0.3))
-        ax.text(0, 0, "Time's Up!", fontsize=10, va='center', ha='center')  # Smaller font size for "Time's Up!"
-    else:
-        # Calculate the proportion of remaining time
-        fraction_completed = remaining_time / total_time if total_time > 0 else 0
-        ax.pie([fraction_completed, 1 - fraction_completed], 
-               colors=['#6d8c9c', '#D5DEDD'], 
-               startangle=90, 
-               counterclock=False, 
-               wedgeprops=dict(width=0.3))
-        
-        # Format and add remaining time as text in the center of the circle
-        minutes, seconds = divmod(remaining_time, 60)
-        ax.text(0, 0, f"{int(minutes):02d}:{int(seconds):02d}", 
-                fontsize=14, va='center', ha='center')  # Adjusted font size for remaining time
-
-    ax.set_aspect('equal')
-    return fig
-
 # Streamlit tabs
 tabs = st.tabs(["🏁 QR", "⌚ Timer", "👥 Grouping", "🎧 multi-TTS"])
 
 # Timer tab
+# Timer tab (using Hugging Face deployment)
 with tabs[1]:
-    st.text("👀 MK316 Timer")
-
-    # Initialize session state for countdown
-    if "countdown_started" not in st.session_state:
-        st.session_state.countdown_started = False
-    if "start_time" not in st.session_state:
-        st.session_state.start_time = 0
-    if "remaining_time" not in st.session_state:
-        st.session_state.remaining_time = 0
-    if "time_up" not in st.session_state:
-        st.session_state.time_up = False
-
-    # Function to start the countdown timer
-    def start_countdown():
-        if not st.session_state.countdown_started:
-            st.session_state.remaining_time = st.session_state.start_time
-            st.session_state.countdown_started = True
-            st.session_state.time_up = False
-
-    # Function to reset the countdown timer
-    def reset_countdown():
-        st.session_state.start_time = 0
-        st.session_state.remaining_time = 0
-        st.session_state.countdown_started = False
-        st.session_state.time_up = False
-        st_autorefresh(interval=0, limit=1)  # Trigger a refresh
-
-    # Set up the layout in two columns
-    col1, col2 = st.columns([1, 1])
-
-    # Left column: Current time, input field, buttons, and audio
-    with col1:
-        # Placeholder to display the current time (digital clock)
-        current_time_placeholder = st.empty()
-
-        # Function to display the current time (as a live digital clock)
-        def display_current_time():
-            seoul_tz = pytz.timezone('Asia/Seoul')  # Set timezone to Seoul
-            current_time = datetime.now(seoul_tz).strftime("%H:%M:%S")  # Convert to Seoul time
-
-            # Style the clock (increase font size and set color)
-            current_time_placeholder.markdown(
-                f"<h1 style='text-align: center; font-size: 60px; color: #5785A4;'>{current_time}</h1>",  # Smaller clock font size
-                unsafe_allow_html=True
-            )
-
-        # Input field for countdown time in seconds
-        st.session_state.start_time = st.number_input("Time (s)", min_value=0, max_value=3600, value=10, label_visibility="visible")
-        
-        # Add custom button colors using Streamlit's CSS support
-        st.markdown("""
-            <style>
-            div.stButton > button {
-                width: 8em;
-                height: 2.5em;
-                font-size: 16px;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-
-        # Start and Reset buttons
-        start_button, reset_button = st.columns([1, 1])
-        
-        with start_button:
-            if st.button("Start"):
-                start_countdown()
-        
-        with reset_button:
-            if st.button("Reset"):
-                reset_countdown()
-
-        # Audio player placeholder, shown after countdown finishes
-        audio_placeholder = st.empty()
-
-    # Right column: Circular progress chart
-    with col2:
-        progress_placeholder = st.empty()
-
-    # Timer countdown logic (continuously updates)
-    if st.session_state.countdown_started and not st.session_state.time_up:
-        if st.session_state.remaining_time > 0:
-            # Update the circular progress chart with time in the center
-            fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time, time_up=False)
-            progress_placeholder.pyplot(fig)
-
-            # Decrease the remaining time
-            st.session_state.remaining_time -= 1
-
-            # Refresh the app after 1 second
-            st.experimental_rerun()
-        else:
-            # When the countdown finishes, display "Time's Up!" inside the circle
-            st.session_state.time_up = True
-            fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time, time_up=True)
-            progress_placeholder.pyplot(fig)
-
-            # Play the sound using Streamlit's audio player
-            with col1:
-                audio_file = open("data/timesup.mp3", "rb")
-                audio_placeholder.audio(audio_file.read(), format="audio/mp3")
-
-    # Autorefresh the app every 1 second to update the clock
-    display_current_time()
-    st_autorefresh(interval=1000, limit=1000)
+    st.subheader("Timer from Hugging Face")
+    # Embed Hugging Face Timer using an iframe
+    hf_timer_url = "https://huggingface.co/spaces/MK-316/mytimer"  # Replace with your actual Hugging Face URL
+    components.html(f"""
+        <iframe width="800" height="600" src="{hf_timer_url}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    """, height=600)
 
 # Grouping tab
 with tabs[2]:
