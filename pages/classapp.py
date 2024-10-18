@@ -24,7 +24,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
                colors=['#6d8c9c'], 
                startangle=90, 
                counterclock=False, 
-               wedgeprops=dict(width=0.2))
+               wedgeprops=dict(width=0.1))
         ax.text(0, 0, "Time's Up!", fontsize=10, va='center', ha='center')  # Smaller font size for "Time's Up!"
     else:
         # Calculate the proportion of remaining time
@@ -33,7 +33,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
                colors=['#6d8c9c', '#D5DEDD'], 
                startangle=90, 
                counterclock=False, 
-               wedgeprops=dict(width=0.3))
+               wedgeprops=dict(width=0.1))
         
         # Format and add remaining time as text in the center of the circle
         minutes, seconds = divmod(remaining_time, 60)
