@@ -51,7 +51,7 @@ def display_current_time():
 
     # Style the clock (increase font size and set color)
     current_time_placeholder.markdown(
-        f"<h1 style='text-align: center; font-size: 80px; color: #5785A4;'>{current_time}</h1>",  # Large font
+        f"<h1 style='text-align: center; font-size: 40px; color: #5785A4;'>{current_time}</h1>",  # Large font
         unsafe_allow_html=True
     )
 
