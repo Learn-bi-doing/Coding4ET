@@ -48,7 +48,7 @@ with tabs[0]:
     qr_link = st.text_input("Enter a link to generate a QR code:")
 
     # Adding a 'Generate QR Code' button
-    generate_qr_button = st.button("Generate QR Code")
+    generate_qr_button = st.button("Generate QR")
     
     if generate_qr_button and qr_link:
         # Generate the QR code only when the button is clicked
