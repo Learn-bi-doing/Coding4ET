@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import streamlit.components.v1 as components
@@ -8,9 +9,7 @@ from PIL import Image
 import time
 import pytz
 from datetime import datetime
-import pandas as pd
 
-# Creating the word cloud (function removed since we're replacing it with Grouping)
 # Function to update the progress circle with time inside or display "Time's Up!"
 def update_progress_circle(remaining_time, total_time, time_up):
     fig, ax = plt.subplots(figsize=(2, 2))  # Smaller figure size to fit layout
