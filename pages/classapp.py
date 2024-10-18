@@ -118,7 +118,7 @@ with tabs[1]:
 
             # Style the clock (increase font size and set color)
             current_time_placeholder.markdown(
-                f"<h1 style='text-align: center; font-size: 60px; color: #5785A4;'>{current_time}</h1>",  # Smaller clock font size
+                f"<h1 style='text-align: center; font-size: 40px; color: #5785A4;'>{current_time}</h1>",  # Smaller clock font size
                 unsafe_allow_html=True
             )
 
