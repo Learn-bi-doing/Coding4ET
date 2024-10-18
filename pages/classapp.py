@@ -283,7 +283,7 @@ with tabs[3]:
         return "output.mp3"
     
     # Button to generate speech
-    if st.button("Generate Audio"):
+    if st.button("To speech"):
         if text_input.strip() != "":
             mp3_file = text_to_speech(text_input, language)
             st.audio(mp3_file, format="audio/mp3")
