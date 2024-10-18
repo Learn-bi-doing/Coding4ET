@@ -1,5 +1,7 @@
 streamlit
 qrcode
-PIL
-wordcloud
+numpy
 matplotlib
+wordcloud
+qrcode[pil]   # Ensures that qrcode is installed along with its pillow (PIL) dependency
+Pillow
