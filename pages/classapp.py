@@ -17,20 +17,12 @@ tabs = st.tabs(["📈 QR", "🗃 Data", "🌌 Word Cloud", "🎬 Videos"])
 # QR Code tab
 with tabs[0]:
     st.subheader("QR Code Generator")
-    
-    # Web address input
     qr_link = st.text_input("Enter a link to generate a QR code:")
-    
-    # Additional information input
-    additional_info = st.text_input("Enter additional information to include in the QR code:")
 
     # Add a Submit button
-    generate_qr_button = st.button("Generated")
+    generate_qr_button = st.button("Generate QR Code")
 
     if generate_qr_button and qr_link:
-        # Combine the web address and additional info to generate the QR code
-        full_text = f"{qr_link}\n{additional_info}" if additional_info else qr_link
-        
         # Generate the QR code
         qr = qrcode.QRCode(
             version=1,
@@ -38,7 +30,7 @@ with tabs[0]:
             box_size=10,
             border=4,
         )
-        qr.add_data(full_text)  # Use the combined text
+        qr.add_data(qr_link)
         qr.make(fit=True)
 
         qr_img = qr.make_image(fill='black', back_color='white')
