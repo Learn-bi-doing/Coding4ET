@@ -5,26 +5,32 @@ import time
 import pytz
 from datetime import datetime
 
-# Function to update the progress circle with time inside
-def update_progress_circle(remaining_time, total_time):
-    if remaining_time < 0:
-        remaining_time = 0
-    
-    # Calculate the proportion of remaining time
-    fraction_completed = remaining_time / total_time if total_time > 0 else 0
-    
+# Function to update the progress circle with time inside or display "Time's Up!"
+def update_progress_circle(remaining_time, total_time, time_up):
     fig, ax = plt.subplots(figsize=(3, 3))
-    ax.pie([fraction_completed, 1 - fraction_completed], 
-           colors=['#FF9999', '#D5DEDD'], 
-           startangle=90, 
-           counterclock=False, 
-           wedgeprops=dict(width=0.3))
     
-    # Format and add remaining time as text in the center of the circle
-    minutes, seconds = divmod(remaining_time, 60)
-    ax.text(0, 0, f"{int(minutes):02d}:{int(seconds):02d}", 
-            fontsize=24, va='center', ha='center')  # Add remaining time to the center
-    
+    if time_up:
+        # Show "Time's Up!" in the center of the circle
+        ax.pie([1], 
+               colors=['#FF9999'], 
+               startangle=90, 
+               counterclock=False, 
+               wedgeprops=dict(width=0.3))
+        ax.text(0, 0, "Time's Up!", fontsize=24, va='center', ha='center')  # Display "Time's Up!"
+    else:
+        # Calculate the proportion of remaining time
+        fraction_completed = remaining_time / total_time if total_time > 0 else 0
+        ax.pie([fraction_completed, 1 - fraction_completed], 
+               colors=['#FF9999', '#D5DEDD'], 
+               startangle=90, 
+               counterclock=False, 
+               wedgeprops=dict(width=0.3))
+        
+        # Format and add remaining time as text in the center of the circle
+        minutes, seconds = divmod(remaining_time, 60)
+        ax.text(0, 0, f"{int(minutes):02d}:{int(seconds):02d}", 
+                fontsize=24, va='center', ha='center')  # Add remaining time to the center
+
     ax.set_aspect('equal')
     return fig
 
@@ -51,7 +57,7 @@ def display_current_time():
 
     # Style the clock (increase font size and set color)
     current_time_placeholder.markdown(
-        f"<h1 style='text-align: center; font-size: 40px; color: #5785A4;'>{current_time}</h1>",  # Large font
+        f"<h1 style='text-align: center; font-size: 80px; color: #5785A4;'>{current_time}</h1>",  # Large font
         unsafe_allow_html=True
     )
 
@@ -123,20 +129,22 @@ while True:
         # Display countdown time while the countdown is running
         if st.session_state.remaining_time >= 0:
             # Update the circular progress chart with time in the center
-            fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time)
+            fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time, time_up=False)
             progress_placeholder.pyplot(fig)
 
             st.session_state.remaining_time -= 1
             time.sleep(1)
         else:
-            # When the countdown finishes, display the message and play the sound
+            # When the countdown finishes, display "Time's Up!" inside the circle and play the sound
             st.session_state.time_up = True
-            countdown_placeholder.write("⏰ **Time's Up!**")
-            st.session_state.countdown_started = False
+            fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time, time_up=True)
+            progress_placeholder.pyplot(fig)
 
             # Play the sound using Streamlit's audio player
             audio_file = open("data/timesup.mp3", "rb")
             st.audio(audio_file.read(), format="audio/mp3")
+
+            st.session_state.countdown_started = False
 
     # Ensure continuous clock display
     time.sleep(0.1)
