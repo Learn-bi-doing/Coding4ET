@@ -32,7 +32,7 @@ with tabs[0]:
         qr.make(fit=True)
 
         qr_img = qr.make_image(fill='black', back_color='white')
-        qr_img = qr_img.resize((300, 300))  # Resize image if needed
+        qr_img = qr_img.resize((200, 200))  # Resize image if needed
 
         st.image(qr_img, caption="Generated QR Code", use_column_width=True)  # Display QR code
 
