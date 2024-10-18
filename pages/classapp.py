@@ -12,7 +12,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
     if time_up:
         # Show "Time's Up!" in the center of the circle
         ax.pie([1], 
-               colors=['#FF9999'], 
+               colors=['#6d8c9c'], 
                startangle=90, 
                counterclock=False, 
                wedgeprops=dict(width=0.3))
@@ -21,7 +21,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
         # Calculate the proportion of remaining time
         fraction_completed = remaining_time / total_time if total_time > 0 else 0
         ax.pie([fraction_completed, 1 - fraction_completed], 
-               colors=['#FF9999', '#D5DEDD'], 
+               colors=['#6d8c9c', '#D5DEDD'], 
                startangle=90, 
                counterclock=False, 
                wedgeprops=dict(width=0.3))
@@ -29,7 +29,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
         # Format and add remaining time as text in the center of the circle
         minutes, seconds = divmod(remaining_time, 60)
         ax.text(0, 0, f"{int(minutes):02d}:{int(seconds):02d}", 
-                fontsize=16, va='center', ha='center')  # Adjusted font size for remaining time
+                fontsize=14, va='center', ha='center')  # Adjusted font size for remaining time
 
     ax.set_aspect('equal')
     return fig
@@ -45,7 +45,7 @@ if "time_up" not in st.session_state:
     st.session_state.time_up = False
 
 # Title
-st.title("⏳ MK316 Timer with Circular Progress")
+st.text("👀 MK316 Timer with Circular Progress")
 
 # Placeholder to display the current time (digital clock)
 current_time_placeholder = st.empty()
