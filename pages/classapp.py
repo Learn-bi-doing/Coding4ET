@@ -14,21 +14,27 @@ def create_wordcloud(text):
 # Streamlit tabs
 tabs = st.tabs(["📈 QR", "🗃 Data", "🌌 Word Cloud", "🎬 Videos"])
 
-# QR Code tab
+
+# QR Code generator tab
 with tabs[0]:
-    st.subheader("Generate QR Code")
-    
-    # User input for the link
-    user_link = st.text_input("Enter a URL or text to generate a QR code:")
-    
-    # Generate QR code when the user submits a valid link or text
-    if st.button("Generate QR Code") and user_link:
-        qr_img = qrcode.make(user_link)  # Generate QR code image
-        img_path = "qrcode_image.png"
-        qr_img.save(img_path)  # Save the image temporarily
-        
-        # Display the QR code image on the same page
-        st.image(img_path, caption="Here is your QR code:", width=300, height=300, use_column_width=True)
+    st.subheader("QR Code Generator")
+    qr_link = st.text_input("Enter a link to generate a QR code:")
+
+    if qr_link:
+        # Generate the QR code
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(qr_link)
+        qr.make(fit=True)
+
+        qr_img = qr.make_image(fill='black', back_color='white')
+        qr_img = qr_img.resize((300, 300))  # Resize image if needed
+
+        st.image(qr_img, caption="Generated QR Code", use_column_width=True)  # Display QR code
 
 # Data tab
 with tabs[1]:
