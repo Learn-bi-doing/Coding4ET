@@ -8,6 +8,7 @@ from PIL import Image
 import time
 import pytz
 from datetime import datetime
+import math
 
 # Creating the word cloud
 def create_wordcloud(text):
@@ -129,6 +130,9 @@ with tabs[1]:
     # Placeholder for displaying the countdown time
     countdown_placeholder = st.empty()
 
+    # Placeholder for the visual circular progress
+    progress_placeholder = st.empty()
+
     # Timer countdown loop (only runs when countdown has started)
     while True:
         # Update the clock every second
@@ -139,6 +143,15 @@ with tabs[1]:
             if st.session_state.remaining_time > 0:
                 minutes, seconds = divmod(st.session_state.remaining_time, 60)
                 countdown_placeholder.write(f"**Remaining Time:** {int(minutes):02d}:{int(seconds):02d}")
+
+                # Visual circular progress
+                fig, ax = plt.subplots()
+                ax.pie([st.session_state.remaining_time, st.session_state.start_time - st.session_state.remaining_time],
+                       colors=['#FF9999', '#D5DEDD'],
+                       startangle=90, counterclock=False, wedgeprops=dict(width=0.3))
+                ax.set_aspect('equal')
+                progress_placeholder.pyplot(fig)
+
                 st.session_state.remaining_time -= 1
             else:
                 # When the countdown finishes, display the message and play the sound
