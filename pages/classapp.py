@@ -28,7 +28,7 @@ with tabs[0]:
         qr_img.save(img_path)  # Save the image temporarily
         
         # Display the QR code image on the same page
-        st.image(img_path, caption="Here is your QR code:", use_column_width=True)
+        st.image(img_path, caption="Here is your QR code:", width=300, height=300, use_column_width=True)
 
 # Data tab
 with tabs[1]:
