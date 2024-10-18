@@ -89,6 +89,20 @@ with tabs[1]:
     if "time_up" not in st.session_state:
         st.session_state.time_up = False
 
+    # Function to start the countdown timer
+    def start_countdown():
+        if not st.session_state.countdown_started:
+            st.session_state.remaining_time = st.session_state.start_time
+            st.session_state.countdown_started = True
+            st.session_state.time_up = False
+
+    # Function to reset the countdown timer
+    def reset_countdown():
+        st.session_state.start_time = 0
+        st.session_state.remaining_time = 0
+        st.session_state.countdown_started = False
+        st.session_state.time_up = False
+
     # Set up the layout in two columns
     col1, col2 = st.columns([1, 1])
 
