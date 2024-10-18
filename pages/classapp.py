@@ -3,6 +3,8 @@ import numpy as np
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import streamlit.components.v1 as components
+import qrcode
+from PIL import Image
 
 # Creating the word cloud
 def create_wordcloud(text):
@@ -10,19 +12,28 @@ def create_wordcloud(text):
     return wordcloud
 
 # Streamlit tabs
-tabs = st.tabs(["📈 Chart", "🗃 Data", "🌌 Word Cloud", "🎬 Videos"])
+tabs = st.tabs(["📈 QR", "🗃 Data", "🌌 Word Cloud", "🎬 Videos"])
 
-# Random data for chart
-data = np.random.randn(10, 1)
-
-# Chart tab
+# QR Code tab
 with tabs[0]:
-    st.subheader("A tab with a chart")
-    st.line_chart(data)
+    st.subheader("Generate QR Code")
+    
+    # User input for the link
+    user_link = st.text_input("Enter a URL or text to generate a QR code:")
+    
+    # Generate QR code when the user submits a valid link or text
+    if st.button("Generate QR Code") and user_link:
+        qr_img = qrcode.make(user_link)  # Generate QR code image
+        img_path = "qrcode_image.png"
+        qr_img.save(img_path)  # Save the image temporarily
+        
+        # Display the QR code image on the same page
+        st.image(img_path, caption="Here is your QR code:", use_column_width=True)
 
 # Data tab
 with tabs[1]:
     st.subheader("A tab with the data")
+    data = np.random.randn(10, 1)  # Random data for display
     st.write(data)
 
 # Word cloud tab
