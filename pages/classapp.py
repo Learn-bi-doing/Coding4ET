@@ -10,11 +10,6 @@ from datetime import datetime
 from gtts import gTTS
 import base64
 
-# Function to create wordcloud (if needed)
-def create_wordcloud(text):
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
-    return wordcloud
-
 # Function to update the progress circle with time inside or display "Time's Up!"
 def update_progress_circle(remaining_time, total_time, time_up):
     fig, ax = plt.subplots(figsize=(2, 2))  # Smaller figure size to fit layout
@@ -154,25 +149,26 @@ with tabs[1]:
     with col2:
         progress_placeholder = st.empty()
 
-    # Timer countdown loop (avoid infinite loop)
+    # Timer countdown logic (without rerun)
     if st.session_state.countdown_started and not st.session_state.time_up:
-        if st.session_state.remaining_time >= 0:
+        if st.session_state.remaining_time > 0:
             # Update the circular progress chart with time in the center
             fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time, time_up=False)
             progress_placeholder.pyplot(fig)
 
+            # Decrease the remaining time
             st.session_state.remaining_time -= 1
             time.sleep(1)
-            st.experimental_rerun()
         else:
             # When the countdown finishes, display "Time's Up!" inside the circle
             st.session_state.time_up = True
             fig = update_progress_circle(st.session_state.remaining_time, st.session_state.start_time, time_up=True)
             progress_placeholder.pyplot(fig)
 
-            # Play the sound using Streamlit's audio player in the left column
-            audio_file = open("data/timesup.mp3", "rb")
-            audio_placeholder.audio(audio_file.read(), format="audio/mp3")
+            # Play the sound using Streamlit's audio player
+            with col1:
+                audio_file = open("data/timesup.mp3", "rb")
+                audio_placeholder.audio(audio_file.read(), format="audio/mp3")
 
 # Grouping tab
 with tabs[2]:
