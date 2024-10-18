@@ -40,7 +40,7 @@ with tabs[0]:
         qr_img.save("qr_code_resized.png")
 
         # Display the resized image using Streamlit
-        st.image("qr_code_resized.png", caption="Generated QR Code", use_column_width=False, width=100)
+        st.image("qr_code_resized.png", caption="Generated QR Code", use_column_width=False, width=200)
 
 # Data tab
 with tabs[1]:
