@@ -207,4 +207,7 @@ with tabs[3]:
     # Button to generate speech
     if st.button("Generate Audio"):
         if text_input.strip() != "":
-            mp3_file = text_to_speech(text_input
+            mp3_file = text_to_speech(text_input, language)
+            st.audio(mp3_file, format="audio/mp3")
+        else:
+            st.warning("Please enter some text to generate audio.")
