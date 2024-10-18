@@ -1,4 +1,5 @@
 streamlit
 qrcode
+qrcode[pil] Pillow
 wordcloud
 matplotlib
