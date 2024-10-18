@@ -227,4 +227,9 @@ with tabs[3]:
     st.write("Below is an embedded video from YouTube: Coding basics")
     # Embed YouTube video using HTML iframe
     html_code = """
-    <iframe width="500" height="400" src="https://www.youtube
+    <iframe width="500" height="400" src="https://www.youtube.com/embed/uigxMFBR0Wg" 
+    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
+    gyroscope; picture-in-picture" allowfullscreen></iframe>
+    """
+    components.html(html_code, height=500)
+
