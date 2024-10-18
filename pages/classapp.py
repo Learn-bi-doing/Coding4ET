@@ -51,8 +51,11 @@ with tabs[0]:
     st.subheader("QR Code Generator")
     qr_link = st.text_input("Enter a link to generate a QR code:")
 
-    if qr_link:
-        # Generate the QR code
+    # Adding a 'Generate QR Code' button
+    generate_qr_button = st.button("Generate QR Code")
+    
+    if generate_qr_button and qr_link:
+        # Generate the QR code only when the button is clicked
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
