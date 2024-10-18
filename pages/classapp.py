@@ -75,17 +75,18 @@ def reset_countdown():
     st.session_state.countdown_started = False
     st.session_state.time_up = False
 
-# Input field for countdown time in seconds with styling for uniform width
+# Input field for countdown time in seconds and style it to match the buttons
 st.markdown(
     """
     <style>
     input[type=number] {
-        width: 100px !important;
+        width: 6em !important;
         height: 2.5em !important;
         font-size: 18px !important;
+        text-align: center;
     }
     div.stButton > button {
-        width: 100px !important;
+        width: 6em !important;
         height: 2.5em !important;
         font-size: 18px !important;
         margin-left: 10px !important;
