@@ -25,7 +25,7 @@ with tabs[0]:
     additional_info = st.text_input("Enter additional information to include in the QR code:")
 
     # Add a Submit button
-    generate_qr_button = st.button("Generated)
+    generate_qr_button = st.button("Generated")
 
     if generate_qr_button and qr_link:
         # Combine the web address and additional info to generate the QR code
