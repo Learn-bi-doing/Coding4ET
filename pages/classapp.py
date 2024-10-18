@@ -7,7 +7,7 @@ from datetime import datetime
 
 # Function to update the progress circle with time inside or display "Time's Up!"
 def update_progress_circle(remaining_time, total_time, time_up):
-    fig, ax = plt.subplots(figsize=(3, 3))
+    fig, ax = plt.subplots(figsize=(2, 2))  # Smaller figure size to fit layout
     
     if time_up:
         # Show "Time's Up!" in the center of the circle
@@ -16,7 +16,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
                startangle=90, 
                counterclock=False, 
                wedgeprops=dict(width=0.3))
-        ax.text(0, 0, "Time's Up!", fontsize=24, va='center', ha='center')  # Display "Time's Up!"
+        ax.text(0, 0, "Time's Up!", fontsize=12, va='center', ha='center')  # Smaller font size for "Time's Up!"
     else:
         # Calculate the proportion of remaining time
         fraction_completed = remaining_time / total_time if total_time > 0 else 0
@@ -29,7 +29,7 @@ def update_progress_circle(remaining_time, total_time, time_up):
         # Format and add remaining time as text in the center of the circle
         minutes, seconds = divmod(remaining_time, 60)
         ax.text(0, 0, f"{int(minutes):02d}:{int(seconds):02d}", 
-                fontsize=24, va='center', ha='center')  # Add remaining time to the center
+                fontsize=16, va='center', ha='center')  # Adjusted font size for remaining time
 
     ax.set_aspect('equal')
     return fig
@@ -45,7 +45,7 @@ if "time_up" not in st.session_state:
     st.session_state.time_up = False
 
 # Title
-st.title("👀 MK316 Stopwatch")
+st.title("⏳ MK316 Timer with Circular Progress")
 
 # Placeholder to display the current time (digital clock)
 current_time_placeholder = st.empty()
@@ -57,7 +57,7 @@ def display_current_time():
 
     # Style the clock (increase font size and set color)
     current_time_placeholder.markdown(
-        f"<h1 style='text-align: center; font-size: 80px; color: #5785A4;'>{current_time}</h1>",  # Large font
+        f"<h1 style='text-align: center; font-size: 60px; color: #5785A4;'>{current_time}</h1>",  # Smaller clock font size
         unsafe_allow_html=True
     )
 
@@ -75,46 +75,39 @@ def reset_countdown():
     st.session_state.countdown_started = False
     st.session_state.time_up = False
 
-# Input field for countdown time in seconds and style it to match the buttons
-st.markdown(
-    """
-    <style>
-    input[type=number] {
-        width: 6em !important;
-        height: 2.5em !important;
-        font-size: 18px !important;
-        text-align: center;
-    }
-    div.stButton > button {
-        width: 6em !important;
-        height: 2.5em !important;
-        font-size: 18px !important;
-        margin-left: 10px !important;
-        margin-right: 10px !important;
-    }
-    </style>
-    """, 
-    unsafe_allow_html=True
-)
+# Set up the layout in two columns
+col1, col2 = st.columns([1, 1])
 
-# Countdown time input, start, and reset buttons aligned in one row
-col1, col2, col3 = st.columns([1, 0.5, 0.5])
+# Left column: Input field and buttons
 with col1:
+    # Input field for countdown time in seconds
     st.session_state.start_time = st.number_input("Time (s)", min_value=0, max_value=3600, value=10)
+    
+    # Add custom button colors using Streamlit's CSS support
+    st.markdown("""
+        <style>
+        div.stButton > button {
+            width: 8em;
+            height: 2.5em;
+            font-size: 16px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
+    # Start and Reset buttons
+    start_button, reset_button = st.columns([1, 1])
+    
+    with start_button:
+        if st.button("Start"):
+            start_countdown()
+    
+    with reset_button:
+        if st.button("Reset"):
+            reset_countdown()
+
+# Right column: Circular progress chart
 with col2:
-    if st.button("Start"):
-        start_countdown()
-
-with col3:
-    if st.button("Reset"):
-        reset_countdown()
-
-# Placeholder for displaying the countdown time
-countdown_placeholder = st.empty()
-
-# Placeholder for the visual circular progress
-progress_placeholder = st.empty()
+    progress_placeholder = st.empty()
 
 # Timer countdown loop (only runs when countdown has started)
 while True:
