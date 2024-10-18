@@ -8,7 +8,6 @@ import time
 import pytz
 from datetime import datetime
 from gtts import gTTS
-import base64
 
 # Function to update the progress circle with time inside or display "Time's Up!"
 def update_progress_circle(remaining_time, total_time, time_up):
@@ -90,6 +89,7 @@ with tabs[1]:
             st.session_state.remaining_time = st.session_state.start_time
             st.session_state.countdown_started = True
             st.session_state.time_up = False
+            st.experimental_rerun()  # Forces the app to refresh and update the UI
 
     # Function to reset the countdown timer
     def reset_countdown():
@@ -97,6 +97,7 @@ with tabs[1]:
         st.session_state.remaining_time = 0
         st.session_state.countdown_started = False
         st.session_state.time_up = False
+        st.experimental_rerun()
 
     # Set up the layout in two columns
     col1, col2 = st.columns([1, 1])
@@ -149,7 +150,7 @@ with tabs[1]:
     with col2:
         progress_placeholder = st.empty()
 
-    # Timer countdown logic (without rerun)
+    # Timer countdown logic
     if st.session_state.countdown_started and not st.session_state.time_up:
         if st.session_state.remaining_time > 0:
             # Update the circular progress chart with time in the center
@@ -159,6 +160,7 @@ with tabs[1]:
             # Decrease the remaining time
             st.session_state.remaining_time -= 1
             time.sleep(1)
+            st.experimental_rerun()  # Forces the app to refresh for the next second
         else:
             # When the countdown finishes, display "Time's Up!" inside the circle
             st.session_state.time_up = True
@@ -169,6 +171,8 @@ with tabs[1]:
             with col1:
                 audio_file = open("data/timesup.mp3", "rb")
                 audio_placeholder.audio(audio_file.read(), format="audio/mp3")
+
+# The rest of the tabs (Grouping and TTS) remain the same
 
 # Grouping tab
 with tabs[2]:
