@@ -50,7 +50,6 @@ with tabs[0]:
 
 # Timer tab
 with tabs[1]:
-    st.caption("👀 MK316 Timer")
 
     # Embed the Hugging Face space as an iframe
     huggingface_space_url = "https://MK-316-mytimer.hf.space"
