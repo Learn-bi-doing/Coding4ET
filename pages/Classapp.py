@@ -52,14 +52,13 @@ with tabs[0]:
 with tabs[1]:
     st.caption("👀 MK316 Timer")
 
-    # Display a button to open the Hugging Face Space in a new tab
-    huggingface_space_url = "https://huggingface.co/spaces/MK-316/mytimer"
-
-    st.markdown(f"[Open MK316 Timer in a New Tab]({huggingface_space_url})", unsafe_allow_html=True)
-
-    # Optionally, add a button that opens the link
-    if st.button('Open Timer'):
-        st.markdown(f'<a href="{huggingface_space_url}" target="_blank">Click here to open the Timer</a>', unsafe_allow_html=True)
+    # Embed the Hugging Face space as an iframe
+    huggingface_space_url = "https://MK-316-mytimer.hf.space"
+    
+    # Use Streamlit components to embed the external page
+    st.components.v1.html(f"""
+        <iframe src="{huggingface_space_url}" width="100%" height="600px" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    """, height=600)
 
 # Grouping tab
 with tabs[2]:
