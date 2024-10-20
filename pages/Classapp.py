@@ -9,6 +9,9 @@ import pytz
 from datetime import datetime
 import streamlit.components.v1 as components  # For embedding YouTube videos
 
+# Clear the cache to ensure fresh output
+st.cache_resource.clear()  # Use this for newer Streamlit versions
+
 # Function to create wordcloud (if needed)
 def create_wordcloud(text):
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
