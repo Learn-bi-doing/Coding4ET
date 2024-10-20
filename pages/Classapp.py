@@ -9,8 +9,7 @@ import pytz
 from datetime import datetime
 import streamlit.components.v1 as components  # For embedding YouTube videos
 
-# Clear the cache to ensure fresh output
-st.cache_resource.clear()  # Use this for newer Streamlit versions
+
 
 # Function to create wordcloud (if needed)
 def create_wordcloud(text):
@@ -48,6 +47,8 @@ with tabs[0]:
         # Display the resized image using Streamlit
         st.image(qr_img, caption="Generated QR Code", use_column_width=False, width=250)
 
+# Clear the cache to ensure fresh output
+st.cache_resource.clear()  # Use this for newer Streamlit versions
 
 # Timer tab
 with tabs[1]:
