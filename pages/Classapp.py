@@ -4,20 +4,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import qrcode
 from PIL import Image
-import time
-import pytz
-from datetime import datetime
+from wordcloud import WordCloud
 import streamlit.components.v1 as components  # For embedding YouTube videos
 
-
-
-# Function to create wordcloud (if needed)
+# Function to create word cloud
 def create_wordcloud(text):
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
     return wordcloud
 
 # Streamlit tabs
-tabs = st.tabs(["📈 QR", "⏳ Timer", "👥 Grouping", "🎬 Videos"])
+tabs = st.tabs(["📈 QR", "⏳ Timer", "👥 Grouping", "⛅ Word Cloud"])
 
 # QR Code tab
 with tabs[0]:
@@ -47,10 +43,8 @@ with tabs[0]:
         # Display the resized image using Streamlit
         st.image(qr_img, caption="Generated QR Code", use_column_width=False, width=250)
 
-
 # Timer tab
 with tabs[1]:
-
     # Embed the Hugging Face space as an iframe
     huggingface_space_url = "https://MK-316-mytimer.hf.space"
     
@@ -140,12 +134,21 @@ with tabs[2]:
         else:
             st.error("Please upload a CSV file before submitting.")
 
-# Video embedding tab
+# Word Cloud tab
 with tabs[3]:
-    st.subheader("Tutorials")
-    st.write("Below is an embedded video from YouTube: Coding basics")
-    # Embed YouTube video using HTML iframe
-    html_code = """
-    <iframe width="500" height="400" src="https://www.youtube.com/embed/uigxMFBR0Wg" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    """
-    components.html(html_code, height=500)
+    st.subheader("🌌 Word Cloud Generator")
+
+    # Input text for generating the word cloud
+    user_input = st.text_area("Enter text to generate a word cloud:")
+
+    # Button to generate the word cloud
+    if st.button("Generate Word Cloud"):
+        if user_input.strip():
+            # Generate word cloud only when there is valid input
+            wordcloud = create_wordcloud(user_input)
+            fig, ax = plt.subplots()
+            ax.imshow(wordcloud, interpolation='bilinear')
+            ax.axis("off")
+            st.pyplot(fig)
+        else:
+            st.warning("Please enter some text to generate a word cloud.")
