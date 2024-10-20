@@ -14,35 +14,6 @@ def create_wordcloud(text):
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
     return wordcloud
 
-# Function to update the progress circle with time inside or display "Time's Up!"
-def update_progress_circle(remaining_time, total_time, time_up):
-    fig, ax = plt.subplots(figsize=(2, 2))  # Smaller figure size to fit layout
-    
-    if time_up:
-        # Show "Time's Up!" in the center of the circle
-        ax.pie([1], 
-               colors=['#6d8c9c'], 
-               startangle=90, 
-               counterclock=False, 
-               wedgeprops=dict(width=0.3))
-        ax.text(0, 0, "Time's Up!", fontsize=10, va='center', ha='center')  # Smaller font size for "Time's Up!"
-    else:
-        # Calculate the proportion of remaining time
-        fraction_completed = remaining_time / total_time if total_time > 0 else 0
-        ax.pie([fraction_completed, 1 - fraction_completed], 
-               colors=['#6d8c9c', '#D5DEDD'], 
-               startangle=90, 
-               counterclock=False, 
-               wedgeprops=dict(width=0.3))
-        
-        # Format and add remaining time as text in the center of the circle
-        minutes, seconds = divmod(remaining_time, 60)
-        ax.text(0, 0, f"{int(minutes):02d}:{int(seconds):02d}", 
-                fontsize=14, va='center', ha='center')  # Adjusted font size for remaining time
-
-    ax.set_aspect('equal')
-    return fig
-
 # Streamlit tabs
 tabs = st.tabs(["📈 QR", "⏳ Timer", "👥 Grouping", "🎬 Videos"])
 
