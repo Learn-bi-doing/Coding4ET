@@ -77,19 +77,16 @@ with tabs[0]:
 
 # Timer tab
 with tabs[1]:
-    st.text("👀 MK316 Timer")
+    st.caption("👀 MK316 Timer")
 
-    # Initialize session state for countdown
-    if "countdown_started" not in st.session_state:
-        st.session_state.countdown_started = False
-    if "start_time" not in st.session_state:
-        st.session_state.start_time = 0
-    if "remaining_time" not in st.session_state:
-        st.session_state.remaining_time = 0
-    if "time_up" not in st.session_state:
-        st.session_state.time_up = False
+    # Embed the Hugging Face space as an iframe
+    huggingface_space_url = "https://huggingface.co/spaces/MK-316/mytimer"
+    
+    # Use Streamlit components to embed the external page
+    st.components.v1.html(f"""
+        <iframe src="{huggingface_space_url}" width="100%" height="600px" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    """, height=600)
 
-    # Timer code (same as previous)
 
 # Grouping tab
 with tabs[2]:
